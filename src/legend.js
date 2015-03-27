@@ -2,6 +2,10 @@
  /* Start Legend component
  */
 ArcChart.Legend = (function () {
+	function centerLegend(legend, size, lineHeight) {
+		return 'translate(' + ((size - legend.node().getBBox().width) / 2) + ',' + ((size - legend.node().getBBox().height + lineHeight) / 2) + ')';
+	}
+
 	var Legend = function (legend) {
 		this.config = {};
 		this.legend = legend;
@@ -21,9 +25,6 @@ ArcChart.Legend = (function () {
 			return ((featureSize - labelSize - 4) / 2)
 		}
 
-		function centerLegend(legend) {
-			return 'translate(' + ((self.config.size - legend.node().getBBox().width) / 2) + ',' + ((self.config.size - legend.node().getBBox().height + self.config.lineHeight) / 2) + ')';
-		}
 		function _createFeatures (legend, data) {
 
 			function _createFeature (value, line) {
@@ -68,6 +69,7 @@ ArcChart.Legend = (function () {
 						.text(label);
 
 				_addEvents(text, line);
+
 			}
 
 			for (var i = 0, j = labels.length; i < j; i++) {
@@ -99,7 +101,9 @@ ArcChart.Legend = (function () {
 		_sizeFeatures(features, featureWidths);
 		_createLabels(self.legend, self.labels);
 
-		self.legend.attr('transform', centerLegend(self.legend));
+		self.legend.attr('transform', centerLegend(self.legend, self.config.size, self.config.lineHeight));
+
+		return self;
 	};
 
 	Legend.prototype.size = function (size) {
@@ -131,6 +135,12 @@ ArcChart.Legend = (function () {
 		this.labels = labels;
 		return this;
 	};
+
+	Legend.prototype.reposition = function (newSize) {
+		var self = this;
+
+		this.legend.attr('transform', centerLegend(self.legend, newSize, self.config.lineHeight));
+	}
 
 	return Legend;
 })();

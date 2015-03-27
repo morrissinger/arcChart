@@ -3,9 +3,14 @@
  */
 ArcChart.ArcSet = (function () {
 
+	function center(size) {
+		return 'translate(' + size + ',' + size + ')';
+	}
+
 	var ArcSet = function (chart) {
 		this.config = {};
 		this.chart = chart;
+		this.arcs = [];
 	};
 
 	ArcSet.prototype.render = function () {
@@ -27,9 +32,6 @@ ArcChart.ArcSet = (function () {
 			return sum;
 		}
 
-		function center(size) {
-			return 'translate(' + size + ',' + size + ')';
-		}
 
 		function _createBackgroundArc(chart) {
 			var radius = self.config.size / 2;
@@ -40,11 +42,12 @@ ArcChart.ArcSet = (function () {
 					.startAngle(_mapAngle(0))
 					.endAngle(_mapAngle(self.config.span));
 
-			chart.append('path')
+			var path = chart.append('path')
 					.attr('transform', center(self.config.size))
 					.attr('d', arc)
 					.attr('class', 'products ' + 'background');
 
+			self.arcs.push({arc: arc, path: path});
 		}
 
 		function _createArc(chart, end, cssClass, series) {
@@ -79,6 +82,8 @@ ArcChart.ArcSet = (function () {
 						.classed('active', false);
 			});
 
+			self.arcs.push({arc: arc, path: path});
+
 			function arcTween(transition, newAngle) {
 				transition.attrTween('d', function(d) {
 					var interpolate = d3.interpolate(d.endAngle, newAngle);
@@ -106,6 +111,7 @@ ArcChart.ArcSet = (function () {
 		_createBackgroundArc(self.chart);
 		_createArcs(self.chart, self.data, self.labels);
 
+		return self;
 	};
 
 	ArcSet.prototype.size = function (size) {
@@ -143,6 +149,19 @@ ArcChart.ArcSet = (function () {
 		this.labels = labels;
 		return this;
 	};
+
+	ArcSet.prototype.resize = function (newSize) {
+		var self = this;
+
+		for (var i = 0, j = this.arcs.length; i < j; i++) {
+			this.arcs[i].arc
+				.innerRadius(newSize/2 - self.config.arcWidth - self.config.margin)
+				.outerRadius(newSize/2 - self.config.margin);
+
+			this.arcs[i].path.attr('d', this.arcs[i].arc).attr('transform', center(newSize))
+		}
+		return this;
+	}
 
 	return ArcSet;
 })();

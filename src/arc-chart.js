@@ -33,7 +33,7 @@ var ArcChart = (function (Component) {
 		this.config.arcs.span = span;
 		this.config.arcs.startRotationOffset = -1 * span / 2;
 		return this;
-	}
+	};
 
 	Component.prototype.arcWidth = function (width) {
 		this.config.arcs.arcWidth = width;
@@ -76,6 +76,8 @@ var ArcChart = (function (Component) {
 	};
 
 	Component.prototype.render = function () {
+
+		var self = this;
 
 		/* A set of utility functions to assist in rendering */
 		var helpers = {
@@ -124,8 +126,21 @@ var ArcChart = (function (Component) {
 
 		/* Rendering */
 		var svg = helpers.createSvg(this.id, this.config);
-		helpers.createArcs(svg, this.config, this.data, this.labels).render();
-		helpers.createLegend(svg, this.config, this.data, this.labels).render();
+		var arcs = helpers.createArcs(svg, this.config, this.data, this.labels).render();
+		var legend = helpers.createLegend(svg, this.config, this.data, this.labels).render();
+
+		d3.select(window).on('resize', function () {
+			var width = d3.select(self.id).node().getBoundingClientRect().width,
+				height = d3.select(self.id).node().getBoundingClientRect().height;
+
+			var newSize = (width < height) ? width : height;
+
+			var radius = newSize / 2;
+			svg.attr('width', newSize).attr('height', newSize);
+			d3.select('.chart').attr('transform', 'translate(' + (-1 *radius) + ',' + (-1 *radius) + ')')
+			arcs.resize(newSize);
+			legend.reposition(newSize);
+		});
 
 	};
 
