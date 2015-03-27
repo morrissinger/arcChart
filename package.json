@@ -1,0 +1,30 @@
+{
+  "name": "arcChart",
+  "version": "0.1.0",
+  "description": "A flexible arc layout for charts in d3 with legends.",
+  "main": "src/arc-chart.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/morrissinger/arcChart.git"
+  },
+  "keywords": [
+    "d3"
+  ],
+  "author": "Morris Singer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/morrissinger/arcChart/issues"
+  },
+  "homepage": "https://github.com/morrissinger/arcChart",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-header": "^1.2.2"
+  }
+}

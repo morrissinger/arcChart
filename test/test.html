@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<head>
+	<meta HTTP-EQUIV="X-UA-COMPATIBLE" CONTENT="IE=EmulateIE9" >
+	<script type="text/javascript" src="d3.min.js"></script>
+	<script type="text/javascript" src="../src/arc-chart.js"></script>
+	<script type="text/javascript" src="../src/arc-set.js"></script>
+	<script type="text/javascript" src="../src/legend.js"></script>
+</head>
+
+<body>
+
+	<style>
+		path.background {
+			fill: #f7f7f7;
+		}
+
+		path.products {
+			transition: 200ms ease-out;
+			cursor: pointer;
+		}
+
+		path.products.series-0 {
+			fill: #43B02A;
+		}
+
+		path.products.series-0:hover,
+		path.products.series-0.active {
+			fill: #63D04A;
+		}
+
+		path.products.series-1 {
+			fill: #F2CD5C;
+		}
+
+		path.products.series-1:hover,
+		path.products.series-1.active  {
+			fill: #FFDD6C;
+		}
+
+		path.products.series-2 {
+			fill: #53565A;
+		}
+
+		path.products.series-2:hover,
+		path.products.series-2.active  {
+			fill: #73767A;
+		}
+
+		g.legend.filtered  text {
+			opacity: 0.2;
+		}
+
+		g.legend.filtered  text.label.active {
+			opacity: 1;
+		}
+
+		text.label {
+			font-family: "Roboto", sans-serif;
+			font-weight: 300;
+			font-size: 12px;
+			cursor: pointer;
+		}
+
+		text.label {
+			fill: #53565A;
+			transition: 200ms ease-out;
+		}
+
+		text.label.active {
+
+		}
+		text.label.feature {
+			font-size: 22px;
+		}
+	</style>
+	<div id="chart" style="float: left;"></div>
+
+
+
+	<script language="JavaScript">
+		/***********************************************************
+		 *  Simulation
+		 */
+
+		(function () {
+			var data = [
+				28,
+				12,
+				8
+			];
+
+			var labels = [
+				'Running',
+				'Suspended',
+				'Shutdown'
+			];
+
+			var component = new ArcChart('#chart');
+
+			/* Set component properties */
+			component.size(300)
+					.margin(10)
+					.startAnimationDuration(1000);
+
+			/* Set component's arc properties */
+			component.span(270)
+					.arcWidth(50);
+
+			/* Set component's legend properties */
+			component.featureSize(22)
+					.labelSize(12)
+					.lineHeight(32);
+
+			/* Set component's data properties */
+			component.dataSet(data)
+					.labels(labels);
+
+			/* Render */
+			component.render();
+		})();
+
+
+	</script>
+
+</body>
+</html>

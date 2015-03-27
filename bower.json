@@ -1,0 +1,24 @@
+{
+  "name": "arcChart",
+  "version": "0.1.0",
+  "homepage": "https://github.com/morrissinger/arcChart",
+  "authors": [
+    "Morris Singer <morris.singer@gmail.com>"
+  ],
+  "description": "A flexible arc layout for charts in d3 with legends.",
+  "main": "dist/arc-chart.js",
+  "keywords": [
+    "d3"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.5.5"
+  }
+}
