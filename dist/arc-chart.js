@@ -141,7 +141,11 @@ var ArcChart = (function (Component) {
 
 			var newSize = (width < height) ? width : height;
 
+			var radius = newSize / 2;
+			svg.attr('width', newSize).attr('height', newSize);
+			d3.select('.chart').attr('transform', 'translate(' + (-1 *radius) + ',' + (-1 *radius) + ')')
 			arcs.resize(newSize);
+			legend.reposition(newSize);
 		});
 
 	};
@@ -159,9 +163,14 @@ var ArcChart = (function (Component) {
  */
 ArcChart.ArcSet = (function () {
 
+	function center(size) {
+		return 'translate(' + size + ',' + size + ')';
+	}
+
 	var ArcSet = function (chart) {
 		this.config = {};
 		this.chart = chart;
+		this.arcs = [];
 	};
 
 	ArcSet.prototype.render = function () {
@@ -183,9 +192,6 @@ ArcChart.ArcSet = (function () {
 			return sum;
 		}
 
-		function center(size) {
-			return 'translate(' + size + ',' + size + ')';
-		}
 
 		function _createBackgroundArc(chart) {
 			var radius = self.config.size / 2;
@@ -196,11 +202,12 @@ ArcChart.ArcSet = (function () {
 					.startAngle(_mapAngle(0))
 					.endAngle(_mapAngle(self.config.span));
 
-			chart.append('path')
+			var path = chart.append('path')
 					.attr('transform', center(self.config.size))
 					.attr('d', arc)
 					.attr('class', 'products ' + 'background');
 
+			self.arcs.push({arc: arc, path: path});
 		}
 
 		function _createArc(chart, end, cssClass, series) {
@@ -235,6 +242,8 @@ ArcChart.ArcSet = (function () {
 						.classed('active', false);
 			});
 
+			self.arcs.push({arc: arc, path: path});
+
 			function arcTween(transition, newAngle) {
 				transition.attrTween('d', function(d) {
 					var interpolate = d3.interpolate(d.endAngle, newAngle);
@@ -261,6 +270,8 @@ ArcChart.ArcSet = (function () {
 
 		_createBackgroundArc(self.chart);
 		_createArcs(self.chart, self.data, self.labels);
+
+		return self;
 	};
 
 	ArcSet.prototype.size = function (size) {
@@ -300,7 +311,15 @@ ArcChart.ArcSet = (function () {
 	};
 
 	ArcSet.prototype.resize = function (newSize) {
-		console.log(newSize);
+		var self = this;
+
+		for (var i = 0, j = this.arcs.length; i < j; i++) {
+			this.arcs[i].arc
+				.innerRadius(newSize/2 - self.config.arcWidth - self.config.margin)
+				.outerRadius(newSize/2 - self.config.margin);
+
+			this.arcs[i].path.attr('d', this.arcs[i].arc).attr('transform', center(newSize))
+		}
 		return this;
 	}
 
@@ -317,6 +336,10 @@ ArcChart.ArcSet = (function () {
  /* Start Legend component
  */
 ArcChart.Legend = (function () {
+	function centerLegend(legend, size, lineHeight) {
+		return 'translate(' + ((size - legend.node().getBBox().width) / 2) + ',' + ((size - legend.node().getBBox().height + lineHeight) / 2) + ')';
+	}
+
 	var Legend = function (legend) {
 		this.config = {};
 		this.legend = legend;
@@ -336,9 +359,6 @@ ArcChart.Legend = (function () {
 			return ((featureSize - labelSize - 4) / 2)
 		}
 
-		function centerLegend(legend) {
-			return 'translate(' + ((self.config.size - legend.node().getBBox().width) / 2) + ',' + ((self.config.size - legend.node().getBBox().height + self.config.lineHeight) / 2) + ')';
-		}
 		function _createFeatures (legend, data) {
 
 			function _createFeature (value, line) {
@@ -383,6 +403,7 @@ ArcChart.Legend = (function () {
 						.text(label);
 
 				_addEvents(text, line);
+
 			}
 
 			for (var i = 0, j = labels.length; i < j; i++) {
@@ -414,7 +435,9 @@ ArcChart.Legend = (function () {
 		_sizeFeatures(features, featureWidths);
 		_createLabels(self.legend, self.labels);
 
-		self.legend.attr('transform', centerLegend(self.legend));
+		self.legend.attr('transform', centerLegend(self.legend, self.config.size, self.config.lineHeight));
+
+		return self;
 	};
 
 	Legend.prototype.size = function (size) {
@@ -446,6 +469,12 @@ ArcChart.Legend = (function () {
 		this.labels = labels;
 		return this;
 	};
+
+	Legend.prototype.reposition = function (newSize) {
+		var self = this;
+
+		this.legend.attr('transform', centerLegend(self.legend, newSize, self.config.lineHeight));
+	}
 
 	return Legend;
 })();
